@@ -1,6 +1,7 @@
 "use client"
 
 import { useLessonStore } from "@/store/lessonStore"
+import Link from "next/link"
 
 export function Header() {
   const toggleSidebar = useLessonStore((s) => s.toggleSidebar)
@@ -18,9 +19,9 @@ export function Header() {
             <path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
           </svg>
         </button>
-        <a href="/" className="text-sm font-medium" style={{ color: "var(--el-ink)", letterSpacing: "0" }}>
+        <Link href="/" className="text-sm font-medium" style={{ color: "var(--el-ink)", letterSpacing: "0" }}>
           dsa<span style={{ fontStyle: "italic" }}>.</span>visualizer
-        </a>
+        </Link>
       </div>
     </header>
   )

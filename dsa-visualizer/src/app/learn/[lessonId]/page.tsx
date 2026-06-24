@@ -1,23 +1,24 @@
-"use client"
+import { notFound } from "next/navigation"
+import { lessons } from "@/lib/lessons"
+import LessonClient from "./LessonClient"
 
-import { useEffect } from "react"
-import { useParams, notFound } from "next/navigation"
-import { LessonTemplate } from "@/components/lessons/LessonTemplate"
-import { useLessonStore } from "@/store/lessonStore"
-import { lessons, courseMap } from "@/lib/lessons"
+export function generateStaticParams() {
+  return Object.keys(lessons).map((lessonId) => ({
+    lessonId,
+  }))
+}
 
-export default function LessonPage() {
-  const params = useParams()
-  const lessonId = params.lessonId as string
+interface PageProps {
+  params: Promise<{ lessonId: string }>
+}
+
+export default async function LessonPage({ params }: PageProps) {
+  const { lessonId } = await params
   const lesson = lessons[lessonId]
-  const setCurrentLesson = useLessonStore((s) => s.setCurrentLesson)
 
-  useEffect(() => {
-    setCurrentLesson(lessonId)
-    return () => setCurrentLesson(null)
-  }, [lessonId, setCurrentLesson])
+  if (!lesson) {
+    notFound()
+  }
 
-  if (!lesson) notFound()
-
-  return <LessonTemplate lesson={lesson} />
+  return <LessonClient lessonId={lessonId} lesson={lesson} />
 }
