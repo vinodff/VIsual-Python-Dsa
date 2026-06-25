@@ -38,12 +38,13 @@ const content: Record<string, { title: string; desc: string; insight: string; ca
   },
   arrays: {
     title: "What is an Array?",
-    desc: "An <strong>array</strong> is a contiguous block of memory holding elements of the same type, each at a fixed offset.",
-    insight: "Arrays are the simplest and most fundamental data structure. Their fixed size and contiguous layout make access instant but resizing expensive.",
+    desc: "An <strong>array</strong> is a contiguous block of memory holding elements of the same type, each at a fixed offset. Python's <code>array('i')</code> stores C ints directly (4 bytes each) — no Python object overhead.",
+    insight: "Arrays are the simplest and most fundamental data structure. Their fixed size and contiguous layout make access instant but resizing expensive. The key advantage over Python lists: cache locality. Contiguous memory means predictable prefetching — 10-100x faster sequential access than a linked list.",
     cards: [
-      { num: "01", title: "Contiguous", desc: "Elements are stored in adjacent memory slots. No gaps." },
-      { num: "02", title: "Fixed Size", desc: "Arrays have a fixed capacity. You set it once and it doesn't grow." },
-      { num: "03", title: "Same Type", desc: "All elements share the same type (int, float, etc.), enabling compact storage." },
+      { num: "01", title: "Memory Layout", desc: "Element i is at address base + i × element_size. No pointer chasing — direct CPU addressing." },
+      { num: "02", title: "Cache Friendly", desc: "Contiguous memory triggers CPU cache line prefetch. Sequential scan is ~50 GB/s on modern hardware." },
+      { num: "03", title: "Fixed Capacity", desc: "Size is set at creation. Python's array module and NumPy's ndarray both use fixed contiguous buffers." },
+      { num: "04", title: "array vs list", desc: "array('i') uses 4 bytes/int vs list's 8 bytes/pointer + 28 bytes/object. For 1M ints: 4 MB vs ~36 MB." },
     ],
   },
   "a-star": {
@@ -91,9 +92,10 @@ const content: Record<string, { title: string; desc: string; insight: string; ca
     desc: "<strong>Big O notation</strong> describes how an algorithm's runtime or memory usage grows as the input size grows — ignoring constants and focusing on the dominant term.",
     insight: "Big O is the language of algorithm efficiency. O(1) is instant, O(log n) is fast, O(n) is linear, O(n²) gets slow fast, and O(2ⁿ) explodes.",
     cards: [
-      { num: "01", title: "Upper Bound", desc: "Big O describes the worst-case growth rate as input size approaches infinity." },
-      { num: "02", title: "Drop Constants", desc: "O(2n) becomes O(n). Constant factors don't change the growth curve." },
-      { num: "03", title: "Dominant Term", desc: "O(n² + n) becomes O(n²). Only the fastest-growing term matters." },
+      { num: "01", title: "Growth Comparison", desc: "Sorting 1M items: O(n²) ≈ 30 minutes, O(n log n) ≈ 1 second. That's the power of algorithm design." },
+      { num: "02", title: "Drop Constants", desc: "O(2n) becomes O(n). Constant factors don't change the growth curve — 2x faster still scales the same." },
+      { num: "03", title: "Dominant Term", desc: "O(n² + n) becomes O(n²). Only the fastest-growing term matters for large n." },
+      { num: "04", title: "Omega & Theta", desc: "Ω(n) = lower bound (best case). Θ(n) = tight bound (exact growth). O(n) = upper bound (worst case)." },
     ],
   },
   "binary-search": {
@@ -221,9 +223,10 @@ const content: Record<string, { title: string; desc: string; insight: string; ca
     desc: "<strong>Dynamic Programming</strong> solves problems by breaking them into overlapping subproblems and storing results to avoid recomputation.",
     insight: "DP = recursion + memoization. Two approaches: top-down (memoization) and bottom-up (tabulation). Think: 'can I derive state from smaller states?'",
     cards: [
-      { num: "01", title: "Overlapping Subproblems", desc: "The same subproblems appear repeatedly. Store results to avoid recomputation." },
-      { num: "02", title: "Optimal Substructure", desc: "The optimal solution can be built from optimal solutions of subproblems." },
-      { num: "03", title: "Memoization vs Tabulation", desc: "Top-down (recursive + cache) vs bottom-up (iterative table)." },
+      { num: "01", title: "5-Step DP Pattern", desc: "1. Define state. 2. Find recurrence. 3. Identify base cases. 4. Choose top-down/bottom-up. 5. Optimize space." },
+      { num: "02", title: "Overlapping Subproblems", desc: "Fib(5) calls Fib(3) twice. Without DP: O(2ⁿ). With DP: O(n). That's fib(50) = 2⁵⁰ vs 50 steps." },
+      { num: "03", title: "Optimal Substructure", desc: "Shortest path: if A→C goes through B, then A→B and B→C must also be shortest. This property enables DP." },
+      { num: "04", title: "Space Optimization", desc: "Many DP problems need only the last 1-2 rows. Fibonacci O(n) → O(1) space using rolling variables." },
     ],
   },
   "fenwick-tree": {
@@ -338,12 +341,13 @@ const content: Record<string, { title: string; desc: string; insight: string; ca
   },
   lists: {
     title: "What is a List?",
-    desc: "A <strong>list</strong> is an ordered, mutable collection of items. You can add, remove, and change elements freely.",
-    insight: "Lists are the workhorse of Python. They can hold any type, grow and shrink, and support powerful operations like slicing and sorting.",
+    desc: "A <strong>list</strong> is an ordered, mutable collection of items. Python lists are dynamic arrays — they hold references to objects, not the objects themselves (8 bytes per reference).",
+    insight: "Lists are the workhorse of Python. They can hold any type, grow and shrink, and support powerful operations like slicing and sorting. CPython's list implementation uses overallocation: after resize, ~6% extra slots are added to amortize future appends.",
     cards: [
-      { num: "01", title: "Ordered", desc: "Items have a defined order that stays consistent." },
-      { num: "02", title: "Mutable", desc: "You can change, add, or remove items after creation." },
-      { num: "03", title: "Mixed Types", desc: "A single list can hold int, str, float, even other lists." },
+      { num: "01", title: "Dynamic Array Backing", desc: "A list stores PyObject* pointers in contiguous memory. Capacity != length. Resize factor ≈ 1.125 (9/8)." },
+      { num: "02", title: "All Key Methods", desc: "append, extend, insert, remove, pop, clear, index, count, sort, reverse, copy — each with known time complexity." },
+      { num: "03", title: "Slicing Creates Copies", desc: "lst[1:4] allocates a new list and copies 3 references. O(k) time and O(k) space." },
+      { num: "04", title: "List Comprehensions", desc: "[x*2 for x in range(1000)] is faster than manual append — specialized bytecode avoids attribute lookups." },
     ],
   },
   mathematical: {
@@ -638,12 +642,13 @@ const content: Record<string, { title: string; desc: string; insight: string; ca
   },
   variables: {
     title: "What is a Variable?",
-    desc: "A <strong>variable</strong> is a name that refers to a value stored in memory.",
-    insight: "When you write <code>age = 25</code>, Python remembers the number 25 and calls it <strong>age</strong>.",
+    desc: "A <strong>variable</strong> is a name that refers to a value stored in memory. Python allocates objects on the heap — each integer takes ~28 bytes, each float ~24 bytes, each string ~49 + 1 per char.",
+    insight: "When you write <code>age = 25</code>, Python calls <code>PyLong_FromLong(25)</code>, allocates 28 bytes on the heap at some address like <code>0x1088b4560</code>, and binds the name <strong>age</strong> to that address in the local symbol table. The same integer 25 is reused via <code>small_int</code> caching for values -5 to 256 — roughly 12 million Python programs depend on this optimization daily.",
     cards: [
-      { num: "01", title: "A Name", desc: "Every variable has a unique name you choose." },
-      { num: "02", title: "A Reference", desc: "The name points to a location in memory." },
-      { num: "03", title: "A Value", desc: "The actual data — a number, text, or object." },
+      { num: "01", title: "Names vs Objects", desc: "Variables are name tags on objects. Multiple names can share one object (aliasing)." },
+      { num: "02", title: "Reference Semantics", desc: "Assignment never copies data — it copies the pointer. Both 'a' and 'b' point to the same object." },
+      { num: "03", title: "Garbage Collection", desc: "Objects with zero references are freed automatically. CPython uses reference counting + generational GC." },
+      { num: "04", title: "Symbol Table", desc: "Python stores variable names in a dict (locals). Name lookup is a hash table lookup — O(1) average." },
     ],
   },
 }

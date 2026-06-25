@@ -17,11 +17,12 @@ const initialLockers = [
 const lessonData: Record<string, { title: string; desc: string; mapping: { icon: string; label: string; python: string }[] }> = {
   variables: {
     title: "The Locker Analogy",
-    desc: "Each locker has a label (address) and holds one item (value). A variable is a name tag tied to a locker.",
+    desc: "Imagine a huge wall of numbered lockers (memory addresses). Each locker holds one item. A variable is like writing your name on a nametag and sticking it to a locker door. Multiple nametags can point to the same locker — that's aliasing. You can even move a nametag to a different locker without touching the contents.",
     mapping: [
-      { icon: "🏷", label: "Locker label", python: "0x1000 (address)" },
-      { icon: "📦", label: "Item inside", python: "Value (25, 'hello')" },
-      { icon: "✏", label: "Your name for it", python: "Variable name (age)" },
+      { icon: "🏷", label: "Locker number", python: "Memory address (0x1000)" },
+      { icon: "📦", label: "Item inside locker", python: "The actual object (25, 'hello')" },
+      { icon: "✏", label: "Your name on a tag", python: "Variable name bound to reference" },
+      { icon: "🔗", label: "Multiple tags, one locker", python: "Two names referencing same object (aliasing)" },
     ],
   },
   "data-types": {
@@ -45,11 +46,12 @@ const lessonData: Record<string, { title: string; desc: string; mapping: { icon:
   },
   lists: {
     title: "Train Cars",
-    desc: "A list is like a train. Each car holds an item, cars stay in order, and you can add or remove cars from either end or the middle.",
+    desc: "A list is like a train. Each car holds one item, cars stay in order, and you can add or remove cars. Adding at the end (append) is easy — just hook on a new car. Adding at the front means uncoupling every car, shifting them one spot forward, then attaching the new one — much slower. The engine (locomotive) knows instantly where car #7 is because they're all connected in a line.",
     mapping: [
-      { icon: "🚋", label: "Each car", python: "An element in the list" },
-      { icon: "🔢", label: "Car number", python: "Index (position) starting at 0" },
-      { icon: "➕", label: "Add/remove cars", python: "append(), pop(), insert(), remove()" },
+      { icon: "🚋", label: "Each car", python: "An element (object reference)" },
+      { icon: "🔢", label: "Car number", python: "Index — base + offset, O(1) access" },
+      { icon: "➕", label: "Hook on at the end", python: "append() — O(1) amortized" },
+      { icon: "🔄", label: "Uncouple and shift", python: "insert(0) — O(n), shift all elements" },
     ],
   },
   tuples: {
